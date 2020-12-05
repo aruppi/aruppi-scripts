@@ -10,7 +10,7 @@ import os
 from pathlib import PurePosixPath
 import json
 
-chrome_path = path.join(os.getcwd() + "\\scrapper-anime\\chromedriver.exe") # This is the relative ChromeDriver path
+chrome_path = path.join(os.getcwd() + "\\chromedriver.exe") # This is the relative ChromeDriver path
 
 print(chrome_path)
 
