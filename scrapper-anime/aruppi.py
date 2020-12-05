@@ -10,7 +10,9 @@ import os
 from pathlib import PurePosixPath
 import json
 
-chrome_path = path.join(os.getcwd() + "\\chromedriver.exe") # This is the relative ChromeDriver path
+chrome_path = path.join(os.getcwd() + "\\scrapper-anime\\chromedriver.exe") # This is the relative ChromeDriver path
+
+print(chrome_path)
 
 ch_options = ChromeOptions()
 ch_options.add_argument("--user-data-dir=C:\\Utilizadores\\guill\\AppData\\Local\\Google\\Chrome\\User Data\\Default")
@@ -57,6 +59,7 @@ def animeflv_scrapper(anime_title):
 
             # Now formatting into the dict
             anime_result_animeflv['id'] = driver.find_element_by_css_selector("h1.Title").text.lower().replace(" ", "-")
+            anime_result_animeflv['title'] = driver.find_element_by_css_selector("h1.Title").text
             anime_result_animeflv['genres'] = [genre.text.lower() for genre in driver.find_elements_by_css_selector(".Nvgnrs a")]
             anime_result_animeflv['status'] = driver.find_element_by_css_selector(".AnmStts").text.lower()
             anime_result_animeflv['description'] = driver.find_element_by_css_selector(".Description").text
@@ -77,6 +80,7 @@ def animeflv_scrapper(anime_title):
 
             # Now formatting into the dict
             anime_result_animeflv['id'] = driver.find_element_by_css_selector("h1.Title").text.lower().replace(" ", "-")
+            anime_result_animeflv['title'] = driver.find_element_by_css_selector("h1.Title").text
             anime_result_animeflv['genres'] = [genre.text.lower() for genre in driver.find_elements_by_css_selector(".Nvgnrs a")]
             anime_result_animeflv['status'] = driver.find_element_by_css_selector(".AnmStts").text.lower()
             anime_result_animeflv['description'] = driver.find_element_by_css_selector(".Description").text
@@ -115,6 +119,7 @@ def jkanime_scrapper(anime_title):
             anime_r.click()
             
             anime_result_jkanime['id'] = driver.find_element_by_css_selector(".sinopsis-box h2").text.lower().replace(" ", "-")
+            anime_result_jkanime['title'] = driver.find_element_by_css_selector(".sinopsis-box h2").text
             anime_result_jkanime['genres'] = [genre.text.lower() for genre in driver.find_elements_by_xpath('//span[contains(text(), "Genero")]/following-sibling::span//a')]
             anime_result_jkanime['description'] = driver.find_element_by_css_selector(".sinopsis-box p").text
             anime_result_jkanime['status'] = driver.find_element_by_xpath("//div[@class='info-field']//span[text()='Estado:']/following-sibling::span").text.lower()
@@ -206,7 +211,9 @@ def start_scrapper(anime_title):
             return "Sorry"
 
 animeResult = start_scrapper("tokyo ghoul") # -> Change the title for other animes !
+print(animeResult)
+
 
 # Have fun !
-with open('animeParsed.json', 'w', encoding='utf-8') as fp:
+with open(f'{animeResult["id"]}.json', 'w', encoding='utf-8') as fp:
     json.dump(animeResult, fp, indent=4, ensure_ascii=False )
