@@ -187,7 +187,7 @@ def start_scrapper(anime_title):
     myanimelist_obj = myanimelist_scrapper(anime_title)
 
     if anime_data and myanimelist_obj:
-        anime_data['ranking'] = myanimelist_obj['score']
+        anime_data['score'] = myanimelist_obj['score']
         anime_data['poster'] = myanimelist_obj['imageurl']
         anime_data['mal_id'] = myanimelist_obj['id']
 
@@ -198,7 +198,7 @@ def start_scrapper(anime_title):
         anime_data = jkanime_scrapper(anime_title)
         
         if anime_data and myanimelist_obj:
-            anime_data['ranking'] = myanimelist_obj['score']
+            anime_data['score'] = myanimelist_obj['score']
             anime_data['poster'] = myanimelist_obj['imageurl']
             anime_data['mal_id'] = myanimelist_obj['id']
 
