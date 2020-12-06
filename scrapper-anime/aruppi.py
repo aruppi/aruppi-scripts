@@ -122,7 +122,7 @@ def jkanime_scrapper(anime_title):
             anime_result_jkanime['title'] = driver.find_element_by_css_selector(".sinopsis-box h2").text
             anime_result_jkanime['genres'] = [genre.text.lower() for genre in driver.find_elements_by_xpath('//span[contains(text(), "Genero")]/following-sibling::span//a')]
             anime_result_jkanime['description'] = driver.find_element_by_css_selector(".sinopsis-box p").text
-            anime_result_jkanime['status'] = driver.find_element_by_xpath("//div[@class='info-field']//span[text()='Estado:']/following-sibling::span").text.lower()
+            anime_result_jkanime['state'] = driver.find_element_by_xpath("//div[@class='info-field']//span[text()='Estado:']/following-sibling::span").text.lower()
             
             #print(anime_result_jkanime)
             
