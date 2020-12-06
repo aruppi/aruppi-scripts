@@ -45,7 +45,7 @@ def animeflv_scrapper(anime_title):
     search_bar.send_keys(anime_title)
 
     try:
-        anime_result = WebDriverWait(driver, 10).until(
+        anime_result = WebDriverWait(driver, 30).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span.title"))
         )
     except:
@@ -149,7 +149,7 @@ def myanimelist_scrapper(anime_title):
     search_bar.send_keys(anime_title)
     
     try:
-        anime_result = WebDriverWait(driver, 10).until(
+        anime_result = WebDriverWait(driver, 30).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.info.anime div.name"))
         )
     except:
@@ -210,10 +210,10 @@ def start_scrapper(anime_title):
             driver.quit()
             return "Sorry"
 
-animeResult = start_scrapper("tokyo ghoul") # -> Change the title for other animes !
+animeResult = start_scrapper("shingeki no kyojin: the final season") # -> Change the title for other animes !
 print(animeResult)
 
 
 # Have fun !
-with open(f'{animeResult["id"]}.json', 'w', encoding='utf-8') as fp:
+with open(f'{animeResult["id"].replace(":", "")}.json', 'w', encoding='utf-8') as fp:
     json.dump(animeResult, fp, indent=4, ensure_ascii=False )
