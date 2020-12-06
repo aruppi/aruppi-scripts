@@ -58,7 +58,7 @@ def animeflv_scrapper(anime_title):
             anime_r.click()
 
             # Now formatting into the dict
-            anime_result_animeflv['id'] = driver.find_element_by_css_selector("h1.Title").text.lower().replace(" ", "-")
+            anime_result_animeflv['id'] = driver.find_element_by_css_selector("h1.Title").text.lower().replace(" ", "-").replace(":", "").replace(";", "")
             anime_result_animeflv['title'] = driver.find_element_by_css_selector("h1.Title").text
             anime_result_animeflv['genres'] = [genre.text.lower() for genre in driver.find_elements_by_css_selector(".Nvgnrs a")]
             anime_result_animeflv['status'] = driver.find_element_by_css_selector(".AnmStts").text.lower()
@@ -79,7 +79,7 @@ def animeflv_scrapper(anime_title):
             anime_r.click()
 
             # Now formatting into the dict
-            anime_result_animeflv['id'] = driver.find_element_by_css_selector("h1.Title").text.lower().replace(" ", "-")
+            anime_result_animeflv['id'] = driver.find_element_by_css_selector("h1.Title").text.lower().replace(" ", "-").replace(":", "").replace(";", "")
             anime_result_animeflv['title'] = driver.find_element_by_css_selector("h1.Title").text
             anime_result_animeflv['genres'] = [genre.text.lower() for genre in driver.find_elements_by_css_selector(".Nvgnrs a")]
             anime_result_animeflv['status'] = driver.find_element_by_css_selector(".AnmStts").text.lower()
@@ -118,7 +118,7 @@ def jkanime_scrapper(anime_title):
 
             anime_r.click()
             
-            anime_result_jkanime['id'] = driver.find_element_by_css_selector(".sinopsis-box h2").text.lower().replace(" ", "-")
+            anime_result_jkanime['id'] = driver.find_element_by_css_selector(".sinopsis-box h2").text.lower().replace(" ", "-").replace(":", "").replace(";", "")
             anime_result_jkanime['title'] = driver.find_element_by_css_selector(".sinopsis-box h2").text
             anime_result_jkanime['genres'] = [genre.text.lower() for genre in driver.find_elements_by_xpath('//span[contains(text(), "Genero")]/following-sibling::span//a')]
             anime_result_jkanime['description'] = driver.find_element_by_css_selector(".sinopsis-box p").text
