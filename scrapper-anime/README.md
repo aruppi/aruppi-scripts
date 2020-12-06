@@ -15,7 +15,7 @@ in windows go to your CMD or PowerShell
 
 5 - After you install the requirements.txt, you can execute the script
 with this command in the same Terminal or PowerShell: "python aruppi.py"
-(your directory needs to be ScrappingAruppi)
+(your directory needs to be scrapper-anime)
 
 6 - Then you done !, you have the info
 
