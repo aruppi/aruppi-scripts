@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urlparse, unquote
 from os import path
 import os
@@ -11,18 +12,11 @@ from pathlib import PurePosixPath
 import json
 
 chrome_path = path.join(os.getcwd() + "\\chromedriver.exe") # This is the relative ChromeDriver path
-
-print(chrome_path)
-
 ch_options = ChromeOptions()
-ch_options.add_argument("--user-data-dir=C:\\Utilizadores\\guill\\AppData\\Local\\Google\\Chrome\\User Data\\Default")
 ch_options.add_argument("--start-maximized")
 
-# This gets the first anime of the listAnimes
-driver = wb.Chrome(executable_path=chrome_path, options=ch_options)
-
 # This starts the inital scrapper
-def animeflv_scrapper(anime_title):
+def animeflv_scrapper(anime_title, driver):
     """
     This is the scrapper for the animeflv page
     @PARAMS anime_title, search the anime by the title
@@ -34,7 +28,7 @@ def animeflv_scrapper(anime_title):
     anime_result_animeflv = {}
 
     try:
-        driver.implicitly_wait(10)
+        driver.implicitly_wait(4)
         driver.get("https://www3.animeflv.net/")
         
     except:
@@ -45,7 +39,7 @@ def animeflv_scrapper(anime_title):
     search_bar.send_keys(anime_title)
 
     try:
-        anime_result = WebDriverWait(driver, 30).until(
+        anime_result = WebDriverWait(driver, 4).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "span.title"))
         )
     except:
@@ -63,6 +57,7 @@ def animeflv_scrapper(anime_title):
             anime_result_animeflv['genres'] = [genre.text.lower() for genre in driver.find_elements_by_css_selector(".Nvgnrs a")]
             anime_result_animeflv['status'] = driver.find_element_by_css_selector(".AnmStts").text.lower()
             anime_result_animeflv['description'] = driver.find_element_by_css_selector(".Description").text
+            anime_result_animeflv['jkanime'] = False
 
             #print(anime_result_animeflv)
             
@@ -84,12 +79,13 @@ def animeflv_scrapper(anime_title):
             anime_result_animeflv['genres'] = [genre.text.lower() for genre in driver.find_elements_by_css_selector(".Nvgnrs a")]
             anime_result_animeflv['status'] = driver.find_element_by_css_selector(".AnmStts").text.lower()
             anime_result_animeflv['description'] = driver.find_element_by_css_selector(".Description").text
+            anime_result_animeflv['jkanime'] = False
 
             #print(anime_result_animeflv)
             
             return anime_result_animeflv
 
-def jkanime_scrapper(anime_title):
+def jkanime_scrapper(anime_title, driver):
     """
     This is the scrapper for the jkanime page
     @PARAMS anime_title, search the anime by the title
@@ -101,7 +97,7 @@ def jkanime_scrapper(anime_title):
     anime_result_jkanime = {}
 
     try:
-        driver.implicitly_wait(10)
+        driver.implicitly_wait(4)
         driver.get("https://www.jkanime.net/")
     except:
         print("The page didn't load, sorry")
@@ -123,12 +119,13 @@ def jkanime_scrapper(anime_title):
             anime_result_jkanime['genres'] = [genre.text.lower() for genre in driver.find_elements_by_xpath('//span[contains(text(), "Genero")]/following-sibling::span//a')]
             anime_result_jkanime['description'] = driver.find_element_by_css_selector(".sinopsis-box p").text
             anime_result_jkanime['state'] = driver.find_element_by_xpath("//div[@class='info-field']//span[text()='Estado:']/following-sibling::span").text.lower()
-            
+            anime_result_jkanime['jkanime'] = True
+
             #print(anime_result_jkanime)
             
             return anime_result_jkanime
 
-def myanimelist_scrapper(anime_title):
+def myanimelist_scrapper(anime_title, driver):
     """
     This is the scrapper for the MyAnimeList page
     @PARAMS anime_title, search the anime by the title
@@ -139,40 +136,80 @@ def myanimelist_scrapper(anime_title):
     anime_result_myanimelist = {}
 
     try:
-        driver.implicitly_wait(10)
-        driver.get("https://www.myanimelist.net/")
+        driver.implicitly_wait(4)
+        driver.get("https://myanimelist.net/anime.php")
     except:
         print("The page didn't load, sorry")
         return False
 
-    search_bar = driver.find_element_by_id("topSearchText")
-    search_bar.send_keys(anime_title)
-    
+    cookies_mal = None
+
     try:
-        anime_result = WebDriverWait(driver, 30).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.info.anime div.name"))
-        )
+        cookies_mal = driver.find_element_by_id("qc-cmp2-ui")
     except:
-        return False
+        cookies_mal = None
+        print("No cookies !") # This is just for testing
 
-    for anime_r in anime_result:
-        if anime_r.text.lower() == anime_title.lower():
 
-            anime_r.click()
+    if not cookies_mal:
+        driver.find_element_by_css_selector("input.inputtext.js-advancedSearchText").send_keys(anime_title)
+    
+        try:
+            anime_result = WebDriverWait(driver, 5).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.info.anime div.name"))
+            )
+        except:
+            return False
 
-            parsed_path = PurePosixPath(
-                            unquote(
-                                    urlparse(
-                                        driver.current_url
-                                    ).path
-                                )
-                            ).parts
+        for anime_r in anime_result:
+            if anime_r.text.lower() == anime_title.lower():
 
-            anime_result_myanimelist['score'] = driver.find_element_by_css_selector("div.score-label").text
-            anime_result_myanimelist['imageurl'] = driver.find_element_by_css_selector("a img.lazyloaded").get_attribute("src")
-            anime_result_myanimelist['id'] = parsed_path[2]
+                anime_r.click()
 
-            return anime_result_myanimelist
+                parsed_path = PurePosixPath(
+                                unquote(
+                                        urlparse(
+                                            driver.current_url
+                                        ).path
+                                    )
+                                ).parts
+
+                anime_result_myanimelist['score'] = driver.find_element_by_css_selector("div.score-label").text
+                anime_result_myanimelist['imageurl'] = driver.find_element_by_css_selector("a img.lazyloaded").get_attribute("src")
+                anime_result_myanimelist['id'] = parsed_path[2]
+
+                return anime_result_myanimelist
+    else:
+        # The name of the button of the cookies can change if the language is different
+        driver.find_element_by_id("qc-cmp2-ui").find_element_by_xpath("//button[contains(text(), 'CONCORDO')]").click()
+        
+        driver.find_element_by_css_selector("input.inputtext.js-advancedSearchText").send_keys(anime_title)
+
+        try:
+            anime_result = WebDriverWait(driver, 5).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.info.anime div.name"))
+            )
+        except:
+            return False
+
+        for anime_r in anime_result:
+            if anime_r.text.lower() == anime_title.lower():
+
+                anime_r.click()
+
+                parsed_path = PurePosixPath(
+                                unquote(
+                                        urlparse(
+                                            driver.current_url
+                                        ).path
+                                    )
+                                ).parts
+
+                anime_result_myanimelist['score'] = driver.find_element_by_css_selector("div.score-label").text
+                anime_result_myanimelist['imageurl'] = driver.find_element_by_css_selector("a img.lazyloaded").get_attribute("src")
+                anime_result_myanimelist['id'] = parsed_path[2]
+
+                return anime_result_myanimelist
 
 
 def start_scrapper(anime_title):
@@ -183,8 +220,11 @@ def start_scrapper(anime_title):
     data
     """
 
-    anime_data = animeflv_scrapper(anime_title)
-    myanimelist_obj = myanimelist_scrapper(anime_title)
+    # This gets the first anime of the listAnimes
+    driver = wb.Chrome(executable_path=chrome_path, options=ch_options)
+
+    anime_data = animeflv_scrapper(anime_title, driver)
+    myanimelist_obj = myanimelist_scrapper(anime_title, driver)
 
     if anime_data and myanimelist_obj:
         anime_data['score'] = myanimelist_obj['score']
@@ -195,7 +235,7 @@ def start_scrapper(anime_title):
 
         return anime_data
     else:
-        anime_data = jkanime_scrapper(anime_title)
+        anime_data = jkanime_scrapper(anime_title, driver)
         
         if anime_data and myanimelist_obj:
             anime_data['score'] = myanimelist_obj['score']
@@ -210,10 +250,11 @@ def start_scrapper(anime_title):
             driver.quit()
             return "Sorry"
 
-animeResult = start_scrapper("shingeki no kyojin: the final season") # -> Change the title for other animes !
-print(animeResult)
+# -------- Funcionality ---------- 
 
+anime_name = input("Enter the anime name:")
+animeResult = start_scrapper(anime_name) 
 
-# Have fun !
+# Collect your favorite information from a anime !
 with open(f'{animeResult["id"].replace(":", "")}.json', 'w', encoding='utf-8') as fp:
     json.dump(animeResult, fp, indent=4, ensure_ascii=False )
