@@ -13,14 +13,14 @@ const screen = {
 };
 
 // Here you put the name of the anime
-generalScrapper('World Trigger');
+generalScrapper('World Trigger'); //@EXAMPLE
 
 async function generalScrapper(animeTitle) {
     
     // Starting the driver
     let driver = await new Builder()
     .forBrowser('chrome')
-    .setChromeOptions(new Options().windowSize(screen))
+    .setChromeOptions(new Options().headless().windowSize(screen))
     .setChromeService(service)
     .build();
     
