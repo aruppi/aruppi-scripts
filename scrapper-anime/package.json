@@ -1,0 +1,15 @@
+{
+  "name": "scrapper-anime",
+  "version": "1.0.0",
+  "description": "Scrapper for a specific anime in animeflv",
+  "main": "aruppi.js",
+  "scripts": {
+    "start": "node aruppi.js"
+  },
+  "author": "capitanrelsew",
+  "license": "ISC",
+  "dependencies": {
+    "fuzzball": "^1.3.0",
+    "selenium-webdriver": "^4.0.0-alpha.8"
+  }
+}
